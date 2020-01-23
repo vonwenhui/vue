@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://fonts.googleapis.com/css?family=Righteous|Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="pomodoroClock.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
+    <title>Pomodoro Clock</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+</head>
+<body>
+    <div id="container">
+        <p id="title">Pomodoro Clock</p>
+        <div id="length-control">
+            <div id="break">
+                <label for="break-length" id="break-label">Break Length</label> <br>
+                <span id="break-decrement" @click='breakDecrement()'><i class="fa fa-arrow-down"></i></span>
+                <span id="break-length">{{breakTime}}</span>
+                <span id="break-increment" @click='breakIncrement()'><i class="fa fa-arrow-up"></i></span>
+            </div>
+            <div id="session">
+                <label for="session-length" id="session-label">Session Length</label> <br>
+                <span id="session-decrement" @click='sessionDecrement()'><i class="fa fa-arrow-down"></i></span>
+                <span id="session-length">{{sessionTime}}</span>
+                <span id="session-increment" @click='sessionIncrement()'><i class="fa fa-arrow-up"></i></span>
+            </div>
+        </div>
+        <div id="time-frame" :class="{time_color: isRed}">
+            <label for="time-left" id="timer-label">{{whichIsCount}}</label>
+            <p id="time-left">{{timeLeft}}</p>
+        </div>
+        <div>
+            <span id="start_stop" @click='runOrStop()'>
+                <i class="fa fa-play"></i>
+                <i class="fa fa-pause"></i>
+            </span>
+            <span id="reset" @click='initial()'>
+                <i class="fas fa-sync-alt"></i>
+            </span>
+        </div>
+        <div id="author">Designed and Coded by <br> Wenhui Feng</div>
+    </div>
+    <script>
+        new Vue({
+            el: '#container',
+            data() {
+                return {
+                    breakTime: 5,
+                    sessionTime: 25,
+                    time: {
+                        min: 25,
+                        sec: 60,
+                    },
+                    timing: false,
+                    whichIsCount: 'Session',
+                    timer: '',
+                    isRed: false
+                }
+            },
+            computed: {
+                timeLeft: function() {
+                    let timeLeft_min = ''
+                    let timeLeft_sec = ''
+
+                    if (this.time.sec == 60) {
+                        timeLeft_sec = '00'
+                    } else if (this.time.sec>0 && this.time.sec<10) {
+                        timeLeft_sec = '0'+ this.time.sec
+                    } else {
+                        timeLeft_sec = this.time.sec
+                    }
+
+                    if (this.time.min>0 && this.time.min<10) {
+                        timeLeft_min = '0'+ this.time.min 
+                    } else if (this.time.min == 0) {
+                        timeLeft_min = '00'
+                    } else {
+                        timeLeft_min = this.time.min
+                    }
+                    return timeLeft = timeLeft_min + ':' +  timeLeft_sec
+                }
+            },
+            mounted() {
+                this.initial()
+            },
+            
+            methods: {
+                initial: function() {
+                    this.breakTime = 5
+                    this.sessionTime = 25
+                    this.time = {min:this.sessionTime, sec:60}
+                    this.timing = false
+                    this.whichIsCount = 'Session'
+                    this.timer = ''
+                    this.isRed = false
+                },
+
+                breakDecrement: function() {
+                    if (this.breakTime > 1 && !this.timing) {
+                        this.breakTime--
+                    }
+                },
+                breakIncrement: function() {
+                    if (this.breakTime < 60 && !this.timing) {
+                        this.breakTime++
+                    }
+                },
+                sessionDecrement: function() {
+                    if (this.sessionTime > 1 && !this.timing) {
+                        this.sessionTime--
+                        this.time.min = this.sessionTime
+                        this.time.sec = 60
+                    }  
+                },
+                sessionIncrement: function() {
+                    if (this.breakTime < 60 && !this.timing) {
+                        this.sessionTime++
+                        this.time.min = this.sessionTime
+                        this.time.sec = 60
+                    }
+                },
+                
+                runOrStop: function() {
+                    this.timing = !this.timing
+                    if (this.timing) {
+                        this.countDown(this.time.min, this.time.sec)
+                    } else {
+                        clearInterval(this.timer)
+                    }     
+                },
+
+                countDown: function(min, sec) {
+                    this.time.min = min
+                    this.time.sec = sec
+
+                    this.timer = setInterval(() => {
+                        if (this.time.sec <= 0) {
+                            console.log('error:sec is minus')
+                            return
+                        } 
+
+                        this.time.sec--
+                        if (this.time.sec == 59) {
+                            this.time.min--
+                        } 
+                        if (this.time.sec == 0) {
+                            if (this.time.min > 0) {
+                                this.time.sec = 60
+                            } else {
+                                clearInterval(this.timer)
+                                switch (this.whichIsCount) {
+                                    case 'Session':
+                                        this.countDown(this.breakTime, 60)
+                                        this.whichIsCount = 'Break'
+                                        break;
+                                    case 'Break': 
+                                        this.countDown(this.sessionTime, 60)
+                                        this.whichIsCount = 'Session'
+                                        break;
+                                    default:
+                                        break;
+                                }  
+                            }
+                        } 
+
+                        this.isRed = !this.time.min
+
+                    }, 1000);
+                }
+            },
+        })
+    </script>
+    
+</body>
+</html>
