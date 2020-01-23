@@ -1,0 +1,86 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Share Tech Mono', monospace;
+}
+
+body {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #c2c2d6;
+    user-select: none;
+    font-size: 20px;
+}
+
+#cal-frame {
+    width: 320px;
+    padding: 5px;
+    background: black;
+    border: 2px solid #47476b;
+}
+
+#display {
+    text-align: right;
+    font-family: digital;
+}
+
+#display-upper {
+    color: orange;
+    height: 20px;
+}
+
+#display-lower {
+    color: white;
+    font-size: 29px;
+}
+
+#keyboard {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    
+}
+
+.key {
+    height: 65px;
+    width: 80px;
+    background: #4d4d4d;
+    text-align: center;
+    border: none;
+    outline: 1px solid black;
+    color: white;
+    font-size: 20px;
+}
+
+.key:hover {
+    color: #000;
+    border: .05em solid grey;
+    z-index: 3;
+}
+
+.clear {
+    width: 160px;
+    background: rgb(172, 57, 57);
+}
+
+.zero {
+    width: 160px;
+}
+
+.equal {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    height: 130px;
+    background: rgb(0, 68, 102);
+}
+
+#wenhui {
+    min-width: 320px;
+    text-align: center;
+    margin-top: 15px;
+    font-family: Share Tech Mono, sans;
+}

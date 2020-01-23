@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Calculator</title>
+    <link rel="stylesheet" href="./calculator.css">
+    <link href="https://fonts.googleapis.com/css?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+</head>
+<body>
+    <div id="cal-frame">
+        <div id="display">
+            <p id="display-upper">{{display_operation}}</p>
+            <p id="display-lower">{{display_value}}</p>
+        </div>
+        <div id="keyboard">
+            <button v-for="item in buttons" 
+                    :key="item.id" 
+                    @click="handleClick(item.value)" 
+                    class="key" :class="item.style" 
+                    id="item.id">{{item.value}}
+            </button>
+        </div>
+    </div>
+    <p id="wenhui">Designed and Coded By <br> Wenui Feng</p>
+
+    <script>
+        new Vue({
+            el: '#cal-frame',
+            data() {
+                return {
+                    buttons: [
+                        {id:'clear', value:'AC', style:'clear'},
+                        {id:'divide', value:'/', style:''},
+                        {id:'multiply', value:'x', style:''},
+                        {id:'seven', value:'7', style:''},
+                        {id:'eight', value:'8', style:''},
+                        {id:'nine', value:'9', style:''},
+                        {id:'subtract', value:'-', style:''},
+                        {id:'four', value:'4', style:''},
+                        {id:'five', value:'5', style:''},
+                        {id:'six', value:'6', style:''},
+                        {id:'add', value:'+', style:''},
+                        {id:'one', value:'1', style:''},
+                        {id:'two', value:'2', style:''},
+                        {id:'three', value:'3', style:''},
+                        {id:'zero', value:'0', style:'zero'},
+                        {id:'decimal', value:'.', style:''},
+                        {id:'equal', value:'=', style:'equal'},
+                    ],
+                    display_operation: '',
+                    display_value: '0',
+                    first_input: true,
+                    last_value: '',
+                    last_operator: '',
+                }
+            },
+            methods: {
+                handleClick: function(value) {
+                    // 清零按钮
+                    if (value == 'AC') {
+                        this.display_value = '0'
+                        this.display_operation = ''
+                        this.first_input = true
+                    // 数字或小数点按钮
+                    } else if (value <= 9 && value>=0 || value == '.') {
+                        if (this.first_input) {
+                            this.first_input = false
+                            if (value == '.') {
+                                this.display_operation = 0
+                            } else {
+                                this.display_value = ''
+                            }
+                        }
+
+                        if (value == '.' && this.display_value.slice(-1) == '.') return
+                        if (this.display_value == 'DIGIT LIMIT MET') return
+
+                        if (this.display_value.length >= 18) {
+                            this.last_value = this.display_value
+                            this.display_value = 'DIGIT LIMIT MET'
+                            setTimeout(() => { 
+                                this.display_value = this.last_value
+                            }, 1000)
+                        } else {
+                            if (this.last_operator == 'over') {
+                                this.display_operation = this.display_value
+                            }
+                            this.display_value += value
+                            this.display_operation += value
+                        }
+                        
+                    // 等号按钮
+                    } else if (value == '=') {
+                        if (this.first_input) {
+                            this.display_value = 'NAN'
+                            this.display_operation = '=NAN'
+                        } else {
+                            this.first_input = true
+                            this.display_operation += value
+                            switch (this.last_operator) {
+                                case '+':
+                                    this.display_value = Number(this.display_value) + Number(this.last_value)
+                                    break;
+                                case '-':
+                                    this.display_value = Number(this.last_value) - Number(this.display_value)
+                                    break;
+                                case 'x':
+                                    this.display_value = Number(this.display_value) * Number(this.last_value)
+                                    break;
+                                case '/':
+                                    this.display_value = Number(this.last_value) / Number(this.display_value) 
+                                    break;
+                                default:
+                                    break;
+                            }
+                            this.display_operation += this.display_value
+                            this.last_operator = 'over'
+                        }
+                    // 剩下的只有加减乘除按钮
+                    } else {
+                        if (this.last_operator == value) return
+
+                        this.first_input = true
+                        this.last_value = this.display_value
+
+                        if (this.last_operator == 'over') {
+                            this.display_operation = this.display_value + value
+                        } else {
+                            this.display_operation += value
+                        }
+
+                        this.display_value = value
+                        this.last_operator = value
+                    }    
+                }
+              
+            },
+        })
+    </script>
+</body>
+</html>
